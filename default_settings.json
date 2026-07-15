@@ -1,0 +1,23 @@
+{
+  "sprite_scale": 1.0,
+  "animation_speed_ms": 140,
+  "launch_at_login": false,
+  "actions": [
+    {
+      "name": "Open File Explorer",
+      "type": "application",
+      "value": "%WINDIR%\\explorer.exe"
+    },
+    {
+      "name": "Open ChatGPT",
+      "type": "url",
+      "value": "https://chatgpt.com"
+    },
+    {
+      "name": "Settings",
+      "type": "settings",
+      "value": ""
+    }
+  ],
+  "asset_version": 2
+}
