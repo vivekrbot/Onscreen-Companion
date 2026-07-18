@@ -1,5 +1,5 @@
 #define MyAppName "DragonTop"
-#define MyAppVersion "1.2.1"
+#define MyAppVersion "1.2.2"
 #define MyAppPublisher "Vivek"
 #define MyAppExeName "DragonTop.exe"
 

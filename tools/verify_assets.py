@@ -3,7 +3,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
-EXPECTED = {"idle": 30, "hover": 30, "fire": 30, "click": 30}
+EXPECTED = {"idle": 15, "hover": 15, "fire": 15, "click": 15}
 SIZE = (360, 240)
 
 total = 0
