@@ -1,6 +1,6 @@
 # DragonTop for Windows — HQ Transparent Edition
 
-DragonTop is a minimal always-on-top animated desktop dragon for Windows 10 and Windows 11.
+DragonTop is a always-on-top animated desktop dragon for Windows and Mac.
 
 ## What changed in version 1.1
 
