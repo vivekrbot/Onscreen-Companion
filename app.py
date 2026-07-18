@@ -85,19 +85,42 @@ def executable_path() -> str:
     return str(Path(sys.executable).resolve())
 
 
-def set_launch_at_login(enabled: bool) -> None:
-    """Add/remove DragonTop in the current user's Windows Run registry key."""
-    if sys.platform != "win32":
-        return
-    import winreg
+def macos_launch_agent_path() -> Path:
+    return Path.home() / "Library" / "LaunchAgents" / "com.vivek.dragontop.plist"
 
-    key_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
+
+def set_launch_at_login(enabled: bool) -> None:
+    """Add/remove DragonTop from the current user's auto-start configuration."""
+    if sys.platform == "win32":
+        import winreg
+
+        key_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
+            if enabled:
+                winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, f'"{executable_path()}"')
+            else:
+                try:
+                    winreg.DeleteValue(key, APP_NAME)
+                except FileNotFoundError:
+                    pass
+    elif sys.platform == "darwin":
+        plist_path = macos_launch_agent_path()
         if enabled:
-            winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, f'"{executable_path()}"')
+            plist_path.parent.mkdir(parents=True, exist_ok=True)
+            plist = (
+                '<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" '
+                '"http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n'
+                '<plist version="1.0">\n<dict>\n'
+                "    <key>Label</key>\n    <string>com.vivek.dragontop</string>\n"
+                "    <key>ProgramArguments</key>\n    <array>\n"
+                f"        <string>{executable_path()}</string>\n    </array>\n"
+                "    <key>RunAtLoad</key>\n    <true/>\n</dict>\n</plist>\n"
+            )
+            plist_path.write_text(plist, encoding="utf-8")
         else:
             try:
-                winreg.DeleteValue(key, APP_NAME)
+                plist_path.unlink()
             except FileNotFoundError:
                 pass
 
@@ -108,6 +131,8 @@ def open_application(value: str) -> None:
     target = os.path.expandvars(os.path.expanduser(value))
     if sys.platform == "win32":
         os.startfile(target)  # type: ignore[attr-defined]
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", target])
     else:
         subprocess.Popen([target])
 
@@ -191,7 +216,13 @@ class SettingsDialog(QDialog):
         if row < 0:
             QMessageBox.information(self, "Select an action", "Select a table row first.")
             return
-        path, _ = QFileDialog.getOpenFileName(self, "Choose an application", "C:/", "Programs (*.exe *.bat *.cmd);;All files (*.*)")
+        if sys.platform == "win32":
+            start_dir, file_filter = "C:/", "Programs (*.exe *.bat *.cmd);;All files (*.*)"
+        elif sys.platform == "darwin":
+            start_dir, file_filter = "/Applications", "Applications (*.app);;All files (*)"
+        else:
+            start_dir, file_filter = str(Path.home()), "All files (*)"
+        path, _ = QFileDialog.getOpenFileName(self, "Choose an application", start_dir, file_filter)
         if path:
             combo = self.table.cellWidget(row, 1)
             combo.setCurrentText("application")
@@ -296,7 +327,7 @@ class DragonWindow(QWidget):
         self.create_tray()
 
     def create_tray(self) -> None:
-        self.tray = QSystemTrayIcon(QIcon(str(ASSET_DIR / "dragon_icon.ico")), self)
+        self.tray = QSystemTrayIcon(QIcon(str(ASSET_DIR / "dragon_icon.png")), self)
         self.tray.setToolTip("DragonTop")
         menu = QMenu()
         show = QAction("Show Dragon", self)
