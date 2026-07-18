@@ -2,6 +2,14 @@
 
 DragonTop is a always-on-top animated desktop dragon for Windows and Mac.
 
+## What changed in version 1.2
+
+- Replaced the animation set with a fully redrawn 240-frame sprite set (60 frames each for idle, hover, fire-breathing and click)
+- Hover now plays a dedicated alert animation before settling into a continuously looping fire-breath animation for as long as the pointer stays over the dragon
+- Frames are organized per-state in `assets/idle`, `assets/hover`, `assets/fire` and `assets/click`
+- All frames losslessly re-compressed to keep the package small
+- Asset verification now checks all four animation states and the full 240-frame set before every build
+
 ## What changed in version 1.1
 
 - Rebuilt all 17 animation frames from the latest cleaned sprite sheet
@@ -60,7 +68,7 @@ installer-output\DragonTop-Setup.exe
 
 ## Usage
 
-- Move the pointer over the dragon to play the hover and fire animation.
+- Move the pointer over the dragon to play the hover animation; keep hovering and it settles into a looping fire-breath animation.
 - Click the visible dragon pixels to play the click animation and open the action menu.
 - Drag the dragon to reposition it.
 - Right-click the system-tray icon for Settings, Show Dragon or Quit.
@@ -91,7 +99,7 @@ The cleaned source sheet is included at:
 source\dragon_sprite_sheet_hq.png
 ```
 
-The ready-to-package transparent frames are in `assets`. The Windows build verifies their dimensions, RGBA mode and transparent corners before creating the executable.
+The ready-to-package transparent frames are in `assets/idle`, `assets/hover`, `assets/fire` and `assets/click` (60 frames each). The Windows build verifies their count, dimensions, RGBA mode and transparent corners before creating the executable.
 
 ## Distribution note
 
