@@ -1,15 +1,6 @@
 # DragonTop for Windows — HQ Transparent Edition
 
-DragonTop is a always-on-top animated desktop dragon for Windows and Mac.
-
-## What changed in version 1.2
-
-- Replaced the animation set with a fully redrawn sprite set, later tuned to 15 frames each for idle, hover, fire-breathing and click (60 frames total), keeping the package light
-- Frames are chosen from the source sequence by picking the sharpest frame in each time window, avoiding the softer/motion-blurred in-between frames that made the animation look blurry at higher frame counts
-- Hover now plays a dedicated alert animation before settling into a continuously looping fire-breath animation for as long as the pointer stays over the dragon
-- Frames are organized per-state in `assets/idle`, `assets/hover`, `assets/fire` and `assets/click`
-- All frames losslessly re-compressed to keep the package small
-- Asset verification now checks all four animation states and the full frame set before every build
+DragonTop is a minimal always-on-top animated desktop dragon for Windows 10 and Windows 11.
 
 ## What changed in version 1.1
 
@@ -69,7 +60,7 @@ installer-output\DragonTop-Setup.exe
 
 ## Usage
 
-- Move the pointer over the dragon to play the hover animation; keep hovering and it settles into a looping fire-breath animation.
+- Move the pointer over the dragon to play the hover and fire animation.
 - Click the visible dragon pixels to play the click animation and open the action menu.
 - Drag the dragon to reposition it.
 - Right-click the system-tray icon for Settings, Show Dragon or Quit.
@@ -100,7 +91,7 @@ The cleaned source sheet is included at:
 source\dragon_sprite_sheet_hq.png
 ```
 
-The ready-to-package transparent frames are in `assets/idle`, `assets/hover`, `assets/fire` and `assets/click` (15 frames each, picked for sharpness). The Windows build verifies their count, dimensions, RGBA mode and transparent corners before creating the executable.
+The ready-to-package transparent frames are in `assets`. The Windows build verifies their dimensions, RGBA mode and transparent corners before creating the executable.
 
 ## Distribution note
 

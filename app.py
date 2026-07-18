@@ -33,7 +33,6 @@ APP_ID = "Vivek.DragonTop"
 BASE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 ASSET_DIR = BASE_DIR / "assets"
 DEFAULT_FILE = BASE_DIR / "default_settings.json"
-ANIMATION_STATES = ("idle", "hover", "fire", "click")
 
 
 def config_dir() -> Path:
@@ -279,18 +278,9 @@ class DragonWindow(QWidget):
         self.moved = False
 
         self.frames = {
-            state: [QPixmap(str(path)) for path in sorted((ASSET_DIR / state).glob(f"{state}_*.png"))]
-            for state in ANIMATION_STATES
+            state: [QPixmap(str(path)) for path in sorted(ASSET_DIR.glob(f"{state}_*.png"))]
+            for state in ("idle", "hover", "click")
         }
-        missing = [state for state, frames in self.frames.items() if not frames]
-        if missing:
-            QMessageBox.critical(
-                None,
-                "DragonTop",
-                "Missing animation frames for: " + ", ".join(missing) +
-                "\nReinstall DragonTop or restore the assets folder.",
-            )
-            sys.exit(1)
         self.label = QLabel(self)
         self.label.setAttribute(Qt.WA_TransparentForMouseEvents)
         layout = QVBoxLayout(self)
@@ -367,14 +357,10 @@ class DragonWindow(QWidget):
         if self.state == "click" and self.frame_index >= len(self.frames["click"]):
             self.state = "hover" if self.underMouse() else "idle"
             self.frame_index = 0
-        elif self.state == "hover" and self.frame_index >= len(self.frames["hover"]):
-            # Hovering plays once, then settles into the looping fire-breath animation.
-            self.state = "fire" if self.underMouse() else "idle"
-            self.frame_index = 0
         self.update_frame()
 
     def enterEvent(self, event) -> None:
-        if self.state not in ("click", "fire"):
+        if self.state != "click":
             self.state = "hover"
             self.frame_index = 0
         super().enterEvent(event)
